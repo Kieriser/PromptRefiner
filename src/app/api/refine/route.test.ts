@@ -63,7 +63,7 @@ describe('/api/refine', () => {
 
     const request = new NextRequest('http://localhost:3000/api/refine', {
       method: 'POST',
-      body: JSON.stringify({ prompt: 'Tell me about dogs' }),
+      body: JSON.stringify({ prompt: 'Tell me about dogs', apiKey: 'test-api-key' }),
       headers: { 'Content-Type': 'application/json' },
     });
 
@@ -107,16 +107,16 @@ describe('/api/refine', () => {
 
     const request = new NextRequest('http://localhost:3000/api/refine', {
       method: 'POST',
-      body: JSON.stringify({ prompt: 'Test prompt' }),
+      body: JSON.stringify({ prompt: 'Test prompt', apiKey: 'test-api-key' }),
       headers: { 'Content-Type': 'application/json' },
     });
 
     const response = await POST(request);
     const data = await response.json();
 
-    expect(response.status).toBe(500);
+    expect(response.status).toBe(400);
     expect(data).toHaveProperty('error');
-    expect(data.error).toBe('OpenAI API key not configured');
+    expect(data.error).toBe('OpenAI API key not provided');
   });
 
   it('should handle OpenAI API errors', async () => {
@@ -127,7 +127,7 @@ describe('/api/refine', () => {
 
     const request = new NextRequest('http://localhost:3000/api/refine', {
       method: 'POST',
-      body: JSON.stringify({ prompt: 'Test prompt' }),
+      body: JSON.stringify({ prompt: 'Test prompt', apiKey: 'test-api-key' }),
       headers: { 'Content-Type': 'application/json' },
     });
 
@@ -155,7 +155,7 @@ describe('/api/refine', () => {
 
     const request = new NextRequest('http://localhost:3000/api/refine', {
       method: 'POST',
-      body: JSON.stringify({ prompt: 'Test prompt' }),
+      body: JSON.stringify({ prompt: 'Test prompt', apiKey: 'test-api-key' }),
       headers: { 'Content-Type': 'application/json' },
     });
 
@@ -196,7 +196,7 @@ describe('/api/refine', () => {
 
     const request = new NextRequest('http://localhost:3000/api/refine', {
       method: 'POST',
-      body: JSON.stringify({ prompt: 'Test prompt' }),
+      body: JSON.stringify({ prompt: 'Test prompt', apiKey: 'test-api-key' }),
       headers: { 'Content-Type': 'application/json' },
     });
 
@@ -229,7 +229,7 @@ describe('/api/refine', () => {
 
     const request = new NextRequest('http://localhost:3000/api/refine', {
       method: 'POST',
-      body: JSON.stringify({ prompt: 'Test prompt' }),
+      body: JSON.stringify({ prompt: 'Test prompt', apiKey: 'test-api-key' }),
       headers: { 'Content-Type': 'application/json' },
     });
 

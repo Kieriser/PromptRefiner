@@ -6,25 +6,35 @@ import PromptRefiner from './PromptRefiner';
 
 export default function PromptRefinerApp() {
   const [apiKey, setApiKey] = useState<string | null>(null);
+  const [selectedModel, setSelectedModel] = useState<string>('gpt-4o-mini');
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check if API key exists in sessionStorage
+    // Check if API key and model exist in sessionStorage
     const storedApiKey = sessionStorage.getItem('openai-api-key');
+    const storedModel = sessionStorage.getItem('openai-model');
+    
     if (storedApiKey) {
       setApiKey(storedApiKey);
+    }
+    if (storedModel) {
+      setSelectedModel(storedModel);
     }
     setIsLoading(false);
   }, []);
 
-  const handleApiKeySet = (key: string) => {
+  const handleApiKeySet = (key: string, model: string) => {
     sessionStorage.setItem('openai-api-key', key);
+    sessionStorage.setItem('openai-model', model);
     setApiKey(key);
+    setSelectedModel(model);
   };
 
   const handleApiKeyReset = () => {
     sessionStorage.removeItem('openai-api-key');
+    sessionStorage.removeItem('openai-model');
     setApiKey(null);
+    setSelectedModel('gpt-4o-mini');
   };
 
   if (isLoading) {
@@ -42,5 +52,5 @@ export default function PromptRefinerApp() {
     return <ApiKeySetup onApiKeySet={handleApiKeySet} />;
   }
 
-  return <PromptRefiner apiKey={apiKey} onApiKeyReset={handleApiKeyReset} />;
+  return <PromptRefiner apiKey={apiKey} selectedModel={selectedModel} onApiKeyReset={handleApiKeyReset} />;
 }

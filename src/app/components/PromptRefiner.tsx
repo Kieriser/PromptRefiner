@@ -17,10 +17,11 @@ interface ApiResponse {
 
 interface PromptRefinerProps {
   apiKey: string;
+  selectedModel: string;
   onApiKeyReset: () => void;
 }
 
-export default function PromptRefiner({ apiKey, onApiKeyReset }: PromptRefinerProps) {
+export default function PromptRefiner({ apiKey, selectedModel, onApiKeyReset }: PromptRefinerProps) {
   const [input, setInput] = useState('');
   const [suggestions, setSuggestions] = useState<RefinedPrompt[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -39,7 +40,8 @@ export default function PromptRefiner({ apiKey, onApiKeyReset }: PromptRefinerPr
 
       axios.post<ApiResponse>('/api/refine', { 
         prompt,
-        apiKey 
+        apiKey,
+        model: selectedModel
       })
       .then(response => {
         setSuggestions(response.data.suggestions);
@@ -56,7 +58,7 @@ export default function PromptRefiner({ apiKey, onApiKeyReset }: PromptRefinerPr
         setIsLoading(false);
       });
     }, 500),
-    [apiKey]
+    [apiKey, selectedModel]
   );
 
   useEffect(() => {
@@ -106,6 +108,22 @@ export default function PromptRefiner({ apiKey, onApiKeyReset }: PromptRefinerPr
             <p className="text-white/70 text-lg font-light tracking-wide mt-6">
               Craft stellar AI prompts with real-time intelligence
             </p>
+          </div>
+
+          {/* Model indicator */}
+          <div className="flex justify-center mb-4">
+            <div className="inline-flex items-center space-x-2 px-4 py-2 bg-white/5 border border-white/10 rounded-full">
+              <svg className="w-4 h-4 text-cyan-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
+              </svg>
+              <span className="text-white/70 text-sm font-light">
+                {selectedModel === 'gpt-3.5-turbo' ? 'GPT-3.5 Turbo' :
+                 selectedModel === 'gpt-4o-mini' ? 'GPT-4o Mini' :
+                 selectedModel === 'gpt-4o' ? 'GPT-4o' :
+                 selectedModel === 'gpt-4-turbo' ? 'GPT-4 Turbo' :
+                 selectedModel === 'gpt-4' ? 'GPT-4' : selectedModel}
+              </span>
+            </div>
           </div>
 
           {/* Main input section */}

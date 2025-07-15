@@ -9,7 +9,7 @@ interface RefinedPrompt {
 
 export async function POST(request: NextRequest) {
   try {
-    const { prompt, apiKey } = await request.json();
+    const { prompt, apiKey, model } = await request.json();
 
     if (!prompt || typeof prompt !== 'string') {
       return NextResponse.json(
@@ -26,6 +26,9 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    // Use selected model or default to gpt-3.5-turbo
+    const selectedModel = model || 'gpt-3.5-turbo';
 
     const systemPrompt = `You are an AI prompt refinement expert. Given a user's prompt, provide 1-3 refined versions that are more clear, specific, and effective.
 
@@ -59,7 +62,7 @@ Return your response as a JSON object with this structure:
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-3.5-turbo',
+        model: selectedModel,
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: `Original prompt: "${prompt}"` }

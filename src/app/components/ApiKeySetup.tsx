@@ -3,11 +3,20 @@
 import { useState } from 'react';
 
 interface ApiKeySetupProps {
-  onApiKeySet: (apiKey: string) => void;
+  onApiKeySet: (apiKey: string, model: string) => void;
 }
+
+const AI_MODELS = [
+  { id: 'gpt-3.5-turbo', name: 'GPT-3.5 Turbo', description: 'Fast and cost-effective', cost: '$0.50 / 1M tokens' },
+  { id: 'gpt-4o-mini', name: 'GPT-4o Mini', description: 'Balanced performance and cost', cost: '$0.15 / 1M tokens' },
+  { id: 'gpt-4o', name: 'GPT-4o', description: 'Latest and most capable', cost: '$2.50 / 1M tokens' },
+  { id: 'gpt-4-turbo', name: 'GPT-4 Turbo', description: 'High performance with large context', cost: '$10.00 / 1M tokens' },
+  { id: 'gpt-4', name: 'GPT-4', description: 'Original GPT-4 model', cost: '$30.00 / 1M tokens' },
+];
 
 export default function ApiKeySetup({ onApiKeySet }: ApiKeySetupProps) {
   const [apiKey, setApiKey] = useState('');
+  const [selectedModel, setSelectedModel] = useState('gpt-4o-mini');
   const [showKey, setShowKey] = useState(false);
   const [error, setError] = useState('');
 
@@ -25,7 +34,7 @@ export default function ApiKeySetup({ onApiKeySet }: ApiKeySetupProps) {
     }
     
     setError('');
-    onApiKeySet(apiKey.trim());
+    onApiKeySet(apiKey.trim(), selectedModel);
   };
 
   return (
@@ -70,6 +79,40 @@ export default function ApiKeySetup({ onApiKeySet }: ApiKeySetupProps) {
           <div className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-3xl p-8 shadow-2xl">
             <form onSubmit={handleSubmit} className="space-y-6">
               
+              {/* Model Selection */}
+              <div className="space-y-2">
+                <label htmlFor="model" className="block text-white/90 font-light text-sm">
+                  AI Model
+                </label>
+                <select
+                  id="model"
+                  value={selectedModel}
+                  onChange={(e) => setSelectedModel(e.target.value)}
+                  className="w-full p-4 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all duration-300"
+                >
+                  {AI_MODELS.map((model) => (
+                    <option key={model.id} value={model.id} className="bg-slate-800 text-white">
+                      {model.name} - {model.description} ({model.cost})
+                    </option>
+                  ))}
+                </select>
+                <div className="bg-white/5 border border-white/10 rounded-xl p-3 mt-2">
+                  <div className="flex items-start space-x-3">
+                    <svg className="w-5 h-5 text-cyan-400 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                    </svg>
+                    <div>
+                      <p className="text-white/90 font-light text-sm">
+                        {AI_MODELS.find(m => m.id === selectedModel)?.name}
+                      </p>
+                      <p className="text-white/60 text-xs font-light">
+                        {AI_MODELS.find(m => m.id === selectedModel)?.description} • {AI_MODELS.find(m => m.id === selectedModel)?.cost}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               {/* API Key Input */}
               <div className="space-y-2">
                 <label htmlFor="apiKey" className="block text-white/90 font-light text-sm">

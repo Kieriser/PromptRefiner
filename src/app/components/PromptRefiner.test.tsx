@@ -25,16 +25,22 @@ Object.assign(navigator, {
 });
 
 describe('PromptRefiner Component', () => {
+  const mockProps = {
+    apiKey: 'test-api-key',
+    selectedModel: 'gpt-4o-mini',
+    onApiKeyReset: jest.fn(),
+  };
+
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   it('renders the component with header and textarea', () => {
-    render(<PromptRefiner />);
+    render(<PromptRefiner {...mockProps} />);
     
     expect(screen.getByRole('heading', { name: /promptrefiner/i })).toBeInTheDocument();
-    expect(screen.getByPlaceholderText(/type your prompt here/i)).toBeInTheDocument();
-    expect(screen.getByText(/craft better ai prompts/i)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/begin typing your prompt/i)).toBeInTheDocument();
+    expect(screen.getByText(/craft stellar ai prompts/i)).toBeInTheDocument();
     expect(screen.getByText(/powered by openai/i)).toBeInTheDocument();
   });
 
@@ -60,8 +66,8 @@ describe('PromptRefiner Component', () => {
 
     mockedAxios.post.mockResolvedValueOnce(mockResponse);
 
-    render(<PromptRefiner />);
-    const textarea = screen.getByPlaceholderText(/type your prompt here/i);
+    render(<PromptRefiner {...mockProps} />);
+    const textarea = screen.getByPlaceholderText(/begin typing your prompt/i);
     
     await userEvent.type(textarea, 'Tell me about dogs');
 
@@ -90,8 +96,8 @@ describe('PromptRefiner Component', () => {
     // Mock a slow API response
     mockedAxios.post.mockImplementation(() => new Promise(resolve => setTimeout(() => resolve({ data: { suggestions: [] } }), 100)));
 
-    render(<PromptRefiner />);
-    const textarea = screen.getByPlaceholderText(/type your prompt here/i);
+    render(<PromptRefiner {...mockProps} />);
+    const textarea = screen.getByPlaceholderText(/begin typing your prompt/i);
     
     await userEvent.type(textarea, 'Test prompt');
 
@@ -114,8 +120,8 @@ describe('PromptRefiner Component', () => {
     mockedAxios.post.mockRejectedValueOnce(mockError);
     mockedAxios.isAxiosError.mockReturnValue(true);
 
-    render(<PromptRefiner />);
-    const textarea = screen.getByPlaceholderText(/type your prompt here/i);
+    render(<PromptRefiner {...mockProps} />);
+    const textarea = screen.getByPlaceholderText(/begin typing your prompt/i);
     
     await userEvent.type(textarea, 'Test prompt');
 
@@ -140,8 +146,8 @@ describe('PromptRefiner Component', () => {
 
     mockedAxios.post.mockResolvedValueOnce(mockResponse);
 
-    render(<PromptRefiner />);
-    const textarea = screen.getByPlaceholderText(/type your prompt here/i);
+    render(<PromptRefiner {...mockProps} />);
+    const textarea = screen.getByPlaceholderText(/begin typing your prompt/i);
     
     await userEvent.type(textarea, 'Test prompt');
 
@@ -171,8 +177,8 @@ describe('PromptRefiner Component', () => {
 
     mockedAxios.post.mockResolvedValueOnce(mockResponse);
 
-    render(<PromptRefiner />);
-    const textarea = screen.getByPlaceholderText(/type your prompt here/i);
+    render(<PromptRefiner {...mockProps} />);
+    const textarea = screen.getByPlaceholderText(/begin typing your prompt/i);
     
     // Type some text
     await userEvent.type(textarea, 'Test prompt');
@@ -198,21 +204,23 @@ describe('PromptRefiner Component', () => {
 
     mockedAxios.post.mockResolvedValueOnce(mockResponse);
 
-    render(<PromptRefiner />);
-    const textarea = screen.getByPlaceholderText(/type your prompt here/i);
+    render(<PromptRefiner {...mockProps} />);
+    const textarea = screen.getByPlaceholderText(/begin typing your prompt/i);
     
     await userEvent.type(textarea, 'Test prompt');
 
     await waitFor(() => {
       expect(mockedAxios.post).toHaveBeenCalledWith('/api/refine', {
-        prompt: 'Test prompt'
+        prompt: 'Test prompt',
+        apiKey: 'test-api-key',
+        model: 'gpt-4o-mini'
       });
     });
   });
 
   it('displays message when no suggestions are available', async () => {
-    render(<PromptRefiner />);
-    const textarea = screen.getByPlaceholderText(/type your prompt here/i);
+    render(<PromptRefiner {...mockProps} />);
+    const textarea = screen.getByPlaceholderText(/begin typing your prompt/i);
     
     await userEvent.type(textarea, 'Test prompt');
 
@@ -232,8 +240,8 @@ describe('PromptRefiner Component', () => {
     mockedAxios.post.mockRejectedValueOnce(mockError);
     mockedAxios.isAxiosError.mockReturnValue(false);
 
-    render(<PromptRefiner />);
-    const textarea = screen.getByPlaceholderText(/type your prompt here/i);
+    render(<PromptRefiner {...mockProps} />);
+    const textarea = screen.getByPlaceholderText(/begin typing your prompt/i);
     
     await userEvent.type(textarea, 'Test prompt');
 
@@ -258,8 +266,8 @@ describe('PromptRefiner Component', () => {
 
     mockedAxios.post.mockResolvedValueOnce(mockResponse);
 
-    render(<PromptRefiner />);
-    const textarea = screen.getByPlaceholderText(/type your prompt here/i);
+    render(<PromptRefiner {...mockProps} />);
+    const textarea = screen.getByPlaceholderText(/begin typing your prompt/i);
     
     await userEvent.type(textarea, 'Test prompt');
 
