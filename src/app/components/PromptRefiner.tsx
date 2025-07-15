@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { debounce } from 'lodash';
 import axios from 'axios';
 
@@ -26,36 +26,37 @@ export default function PromptRefiner({ apiKey, onApiKeyReset }: PromptRefinerPr
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const refinePrompt = async (prompt: string) => {
-    if (!prompt.trim()) {
-      setSuggestions([]);
-      return;
-    }
 
-    setIsLoading(true);
-    setError(null);
+  const debouncedRefine = useMemo(
+    () => debounce((prompt: string) => {
+      if (!prompt.trim()) {
+        setSuggestions([]);
+        return;
+      }
 
-    try {
-      const response = await axios.post<ApiResponse>('/api/refine', { 
+      setIsLoading(true);
+      setError(null);
+
+      axios.post<ApiResponse>('/api/refine', { 
         prompt,
         apiKey 
+      })
+      .then(response => {
+        setSuggestions(response.data.suggestions);
+      })
+      .catch(err => {
+        if (axios.isAxiosError(err)) {
+          setError(err.response?.data?.error || err.message || 'Failed to refine prompt');
+        } else {
+          setError('An unexpected error occurred');
+        }
+        setSuggestions([]);
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
-      setSuggestions(response.data.suggestions);
-    } catch (err) {
-      if (axios.isAxiosError(err)) {
-        setError(err.response?.data?.error || err.message || 'Failed to refine prompt');
-      } else {
-        setError('An unexpected error occurred');
-      }
-      setSuggestions([]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const debouncedRefine = useCallback(
-    debounce(refinePrompt, 500),
-    []
+    }, 500),
+    [apiKey]
   );
 
   useEffect(() => {
@@ -148,7 +149,7 @@ export default function PromptRefiner({ apiKey, onApiKeyReset }: PromptRefinerPr
               </h2>
               
               <div className="grid gap-6">
-                {suggestions.map((suggestion, index) => (
+                {suggestions.map((suggestion) => (
                   <div
                     key={suggestion.id}
                     className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-all duration-300 group"

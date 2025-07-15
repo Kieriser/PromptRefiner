@@ -83,7 +83,7 @@ Return your response as a JSON object with this structure:
     let parsedResponse;
     try {
       parsedResponse = JSON.parse(content);
-    } catch (parseError) {
+    } catch {
       // Fallback: create a basic response if JSON parsing fails
       parsedResponse = {
         suggestions: [
@@ -100,7 +100,7 @@ Return your response as a JSON object with this structure:
     // Validate and sanitize the response
     const suggestions: RefinedPrompt[] = (parsedResponse.suggestions || [])
       .slice(0, 3)
-      .map((suggestion: any, index: number) => ({
+      .map((suggestion: { id?: string; refined?: string; clarity?: number; explanation?: string }, index: number) => ({
         id: suggestion.id || `${index + 1}`,
         refined: suggestion.refined || prompt,
         clarity: Math.max(1, Math.min(10, suggestion.clarity || 5)),

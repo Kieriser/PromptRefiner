@@ -4,13 +4,13 @@ global.fetch = jest.fn();
 // Mock the Next.js server components
 jest.mock('next/server', () => ({
   NextRequest: class MockNextRequest {
-    constructor(public url: string, public init: any) {}
+    constructor(public url: string, public init: { body: string }) {}
     async json() {
       return JSON.parse(this.init.body);
     }
   },
   NextResponse: {
-    json: jest.fn((data: any, options?: { status?: number }) => ({
+    json: jest.fn((data: unknown, options?: { status?: number }) => ({
       json: async () => data,
       status: options?.status || 200,
     })),
@@ -76,7 +76,7 @@ describe('/api/refine', () => {
     expect(data.suggestions).toHaveLength(2);
     
     // Validate structure of each suggestion
-    data.suggestions.forEach((suggestion: any) => {
+    data.suggestions.forEach((suggestion: { id: string; refined: string; clarity: number; explanation: string }) => {
       expect(suggestion).toHaveProperty('id');
       expect(suggestion).toHaveProperty('refined');
       expect(suggestion).toHaveProperty('clarity');

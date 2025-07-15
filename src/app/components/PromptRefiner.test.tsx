@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import axios from 'axios';
 import PromptRefiner from './PromptRefiner';
@@ -11,7 +11,7 @@ const mockedAxios = axios as jest.Mocked<typeof axios>;
 // Mock lodash debounce to make tests synchronous
 jest.mock('lodash', () => ({
   debounce: jest.fn((fn) => {
-    const mockDebounced = (...args: any[]) => fn(...args);
+    const mockDebounced = (...args: unknown[]) => fn(...args);
     mockDebounced.cancel = jest.fn();
     return mockDebounced;
   }),
